@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A learning demo boutique point of sale application">
+  <title>Atelier — Boutique POS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">A</span><div><strong>ATELIER</strong><small>BOUTIQUE STUDIO</small></div></div>
+      <div class="store-label">STORE WORKSPACE</div>
+      <nav>
+        <button class="nav-link active" data-view="dashboard"><span>▦</span> Overview</button>
+        <button class="nav-link" data-view="pos"><span>＋</span> New sale</button>
+        <button class="nav-link" data-view="inventory"><span>◇</span> Inventory</button>
+        <button class="nav-link" data-view="history"><span>↗</span> Sales history</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="avatar">BS</div><div><strong>Boutique Store</strong><small>Demo workspace</small></div></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><div class="eyebrow" id="date-label">STORE MANAGEMENT</div><h1 id="page-title">Overview</h1></div>
+        <div class="top-actions"><span class="status-dot"></span><span class="saved-label">Demo data saved in this browser</span><button class="primary small" id="quick-sale">＋ New sale</button></div>
+      </header>
+
+      <section class="view active" id="view-dashboard">
+        <div class="welcome-row"><div><p class="eyebrow">YOUR BUSINESS AT A GLANCE</p><h2>Good business starts with<br><em>knowing your numbers.</em></h2></div><div class="welcome-note">A simple workspace for daily sales<br>and stock control.</div></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Today's sales</span><span class="stat-icon">↗</span></div><strong id="stat-today">KES 0.00</strong><small id="stat-transactions">0 transactions today</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Products in stock</span><span class="stat-icon">◇</span></div><strong id="stat-products">0</strong><small>Unique product lines</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Units available</span><span class="stat-icon">▤</span></div><strong id="stat-units">0</strong><small>Total quantity across products</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Low stock alerts</span><span class="stat-icon alert">!</span></div><strong id="stat-low">0</strong><small>Products at or below reorder level</small></article>
+        </div>
+        <div class="content-grid">
+          <article class="panel"><div class="panel-heading"><div><p class="eyebrow">RECENT ACTIVITY</p><h3>Latest sales</h3></div><button class="text-button" data-goto="history">View all →</button></div><div id="recent-sales" class="table-wrap"></div></article>
+          <article class="panel stock-panel"><div class="panel-heading"><div><p class="eyebrow">STOCK HEALTH</p><h3>Needs attention</h3></div><button class="text-button" data-goto="inventory">Inventory →</button></div><div id="low-stock-list"></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="view-pos">
+        <div class="section-intro"><div><p class="eyebrow">CHECKOUT</p><h2>Create a sale</h2><p>Choose a product, enter the quantity and prepare a receipt.</p></div></div>
+        <div class="pos-layout">
+          <article class="panel sale-form">
+            <h3>Sale details</h3>
+            <label>Customer name <span class="muted">(optional)</span><input id="customer-name" placeholder="Walk-in customer"></label>
+            <label>Select product<select id="sale-product"><option value="">Choose a product</option></select></label>
+            <div class="product-info" id="product-info">Select a product to see its price and available stock.</div>
+            <label>Quantity<input id="sale-quantity" type="number" min="1" step="1" value="1"></label>
+            <button class="primary full" id="add-to-cart">Add to sale</button>
+            <div class="hint">Discounts are calculated automatically by the Python API when you complete checkout.</div>
+          </article>
+          <article class="panel cart-panel">
+            <div class="panel-heading"><div><p class="eyebrow">CURRENT TRANSACTION</p><h3>Sale summary</h3></div><span class="pill" id="cart-count">0 items</span></div>
+            <div id="cart-lines" class="cart-lines"><div class="empty-state">Your sale is empty.<br>Choose a product to begin.</div></div>
+            <div class="totals"><div><span>Subtotal</span><strong id="cart-subtotal">KES 0.00</strong></div><div><span>Discount</span><strong id="cart-discount">KES 0.00</strong></div><div class="grand-total"><span>Amount due</span><strong id="cart-total">KES 0.00</strong></div></div>
+            <button class="primary full" id="complete-sale" disabled>Complete sale</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-inventory">
+        <div class="section-intro split"><div><p class="eyebrow">PRODUCT MANAGEMENT</p><h2>Your inventory</h2><p>Add products and keep an eye on available quantities.</p></div><button class="primary" id="show-add-product">＋ Add product</button></div>
+        <article class="panel form-panel hidden" id="add-product-panel">
+          <div class="panel-heading"><h3>Add a product</h3><button class="icon-button" id="hide-add-product">×</button></div>
+          <form id="product-form" class="product-form">
+            <label>Product name<input id="new-name" required maxlength="80" placeholder="e.g. Classic leather handbag"></label>
+            <label>Category<select id="new-category"><option>Handbags</option><option>Shoes</option><option>Jewellery</option><option>Perfumes</option><option>Hats & Fascinators</option><option>Accessories</option><option>Other</option></select></label>
+            <label>SKU / code<input id="new-sku" maxlength="24" placeholder="e.g. HB001"></label>
+            <label>Unit price (KES)<input id="new-price" type="number" min="0.01" step="0.01" required placeholder="2500"></label>
+            <label>Opening stock<input id="new-stock" type="number" min="0" step="1" required placeholder="5"></label>
+            <label>Reorder level<input id="new-reorder" type="number" min="0" step="1" value="1" required></label>
+            <div class="form-actions"><button type="button" class="secondary" id="cancel-product">Cancel</button><button class="primary" type="submit">Save product</button></div>
+          </form>
+        </article>
+        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">PRODUCT REGISTER</p><h3>All products <span class="count" id="inventory-count">0</span></h3></div><input class="search" id="inventory-search" placeholder="Search products..."></div><div id="inventory-table" class="table-wrap"></div></article>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="section-intro"><div><p class="eyebrow">TRANSACTION RECORDS</p><h2>Sales history</h2><p>Review completed demo transactions.</p></div></div>
+        <article class="panel"><div class="panel-heading"><div><p class="eyebrow">ALL TRANSACTIONS</p><h3>Completed sales</h3></div><button class="secondary small" id="export-sales">Export CSV</button></div><div id="history-table" class="table-wrap"></div></article>
+      </section>
+      <footer>ATELIER DEMO · Built as a Python learning project · Not for live business transactions</footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="modal-backdrop hidden" id="receipt-modal">
+    <div class="receipt-modal">
+      <div class="receipt-actions"><span>SALE COMPLETE</span><button class="icon-button" id="close-receipt">×</button></div>
+      <div id="receipt-content"></div>
+      <button class="primary full" id="print-receipt">Print receipt</button>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
